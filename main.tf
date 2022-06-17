@@ -7,16 +7,10 @@ terraform {
   }
 }
 
-locals {
-    project_id = "my-cloudrun-api"
-    region = "europe-west4"
-    zone = "europe-west4-a"
-}
-
 provider "google-beta" {
-  project = local.project_id
-  region  = local.region
-  zone    = local.zone
+  project = var.project_id
+  region  = var.region
+  zone    = var.zone
 }
 
 #############################################
@@ -51,7 +45,7 @@ resource "google_project_service" "resourcemanager" {
   disable_on_destroy = false
 }
 
-# This is used so there is some tiem for the activation of the API's to propagate through 
+# This is used so there is some time for the activation of the API's to propagate through 
 # Google Cloud before actually calling them.
 resource "time_sleep" "wait_30_seconds" {
   create_duration = "30s"
@@ -70,7 +64,7 @@ resource "time_sleep" "wait_30_seconds" {
 resource "google_artifact_registry_repository" "my_docker_repo" {
   provider = google-beta
 
-  location = local.region
+  location = var.region
   repository_id = "docker-repository"
   description = "Example docker repository"
   format = "DOCKER"
@@ -105,19 +99,31 @@ resource "google_artifact_registry_repository_iam_member" "docker_pusher_iam" {
 resource "google_cloud_run_service" "api_test" {
   provider = google-beta
   name     = "api-test"
-  location = local.region
+  location = var.region
   template {
     spec {
-      containers {
-        image = "europe-west4-docker.pkg.dev/${local.project_id}/docker-repository/my-api"
-      }
+        containers {
+            image = "europe-west4-docker.pkg.dev/${var.project_id}/docker-repository/my-api"
+            resources {
+                limits = {
+                "memory" = "1G"
+                "cpu" = "1"
+                }
+            }
+        }
+    }
+    metadata {
+        annotations = {
+            "autoscaling.knative.dev/minScale" = "1"
+            "autoscaling.knative.dev/maxScale" = "1"
+        }
     }
   }
   traffic {
-    percent         = 100
+    percent = 100
     latest_revision = true
   }
-    depends_on = [google_artifact_registry_repository_iam_member.docker_pusher_iam]
+  depends_on = [google_artifact_registry_repository_iam_member.docker_pusher_iam]
 }
 
 # Create a policy that allows all users to invoke the API
@@ -134,8 +140,8 @@ data "google_iam_policy" "noauth" {
 # Apply the no-authentication policy to our Cloud Run Service.
 resource "google_cloud_run_service_iam_policy" "noauth" {
   provider = google-beta
-  location    = local.region
-  project     = local.project_id
+  location    = var.region
+  project     = var.project_id
   service     = google_cloud_run_service.api_test.name
 
   policy_data = data.google_iam_policy.noauth.policy_data
