@@ -88,7 +88,10 @@ resource "google_artifact_registry_repository_iam_member" "docker_pusher_iam" {
   repository =  google_artifact_registry_repository.my_docker_repo.repository_id
   role   = "roles/artifactregistry.writer"
   member = "serviceAccount:${google_service_account.docker_pusher.email}"
-  depends_on = [google_artifact_registry_repository.my_docker_repo, google_service_account.docker_pusher]
+  depends_on = [
+    google_artifact_registry_repository.my_docker_repo, 
+    google_service_account.docker_pusher
+    ]
 }
 
 ##############################################

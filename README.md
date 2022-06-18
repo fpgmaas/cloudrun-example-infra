@@ -1,6 +1,7 @@
 # cloudrun-example-infra
 
-This is a repository that contains the code used to set up the infra for the blog post [Deploying a Flask API to Google Cloud Run using Terraform]().
+This is a repository that contains the code used to set up the infra for the 
+blog post [Deploying a Flask API to Google Cloud Run using Terraform](https://fpgmaas.com/blog/deploying-a-flask-api-to-cloudrun).
 
 Pre-requisites to run:
 
@@ -20,4 +21,4 @@ Pre-requisites to run:
 - Run `cp .env.template .env` and set `GOOGLE_APPLICATION_CREDENTIALS` to the path to your service account file.
 - Run `terraform init`
 - Run `terraform validate`
-- Run `terraform apply`
+- Run `source .env && terraform apply`
