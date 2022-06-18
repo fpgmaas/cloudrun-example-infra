@@ -1,4 +1,4 @@
-my-cloudrun-api.json
+infra_service_account.json
 .env
 
 # Local .terraform directories
