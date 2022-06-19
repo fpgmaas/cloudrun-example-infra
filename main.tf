@@ -65,8 +65,8 @@ resource "google_artifact_registry_repository" "my_docker_repo" {
   provider = google-beta
 
   location = var.region
-  repository_id = "docker-repository"
-  description = "Example docker repository"
+  repository_id = var.repository
+  description = "My docker repository"
   format = "DOCKER"
   depends_on = [time_sleep.wait_30_seconds]
 }
@@ -106,7 +106,7 @@ resource "google_cloud_run_service" "api_test" {
   template {
     spec {
         containers {
-            image = "europe-west4-docker.pkg.dev/${var.project_id}/docker-repository/my-api"
+            image = "europe-west4-docker.pkg.dev/${var.project_id}/${var.repository}/${var.docker_image}"
             resources {
                 limits = {
                 "memory" = "1G"
