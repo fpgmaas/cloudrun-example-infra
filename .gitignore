@@ -1,4 +1,6 @@
 .env
+infra_service_account.json
+.DS_Store
 
 # Local .terraform directories
 **/.terraform/*

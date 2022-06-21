@@ -19,6 +19,13 @@ resource "google_project_service" "storage" {
   disable_on_destroy = false
 }
 
+# This is used so there is some time for the activation of the API's to propagate through 
+# Google Cloud before actually calling them.
+resource "time_sleep" "wait_30_seconds" {
+  create_duration = "30s"
+  depends_on = [google_project_service.storage]
+}
+
 // Terraform plugin for creating random IDs
 resource "random_id" "instance_id" {
   byte_length = 8
@@ -32,4 +39,10 @@ resource "google_storage_bucket" "default" {
   versioning {
     enabled = true
   }
+  depends_on = [time_sleep.wait_30_seconds]
+}
+
+output "bucket_name" {
+  description = "Terraform backend bucket name"
+  value       = google_storage_bucket.default.name
 }
