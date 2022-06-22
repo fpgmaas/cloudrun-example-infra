@@ -40,7 +40,7 @@ jobs:
 
       - name: Terraform plan
         id: plan
-        run: terraform plan
+        run: terraform plan -no-color
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
