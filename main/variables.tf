@@ -25,11 +25,11 @@ variable "repository" {
 variable "docker_image" {
   description = "The name of the Docker image in the Artifact Registry repository to be deployed to Cloud Run"
   type        = string
-  default     = "my-api:0.0.2"
+  default     = "my-api:0.0.1"
 }
 
 variable "first_time" {
   description = "Boolean flag to indicate if this is the first time the application is running. If so, the cloud run step is omitted"
   type        = bool
-  default     = true
+  default     = false
 }
